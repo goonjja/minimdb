@@ -4,13 +4,12 @@ import { Observable, throwError } from 'rxjs';
 import { retry, catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { MediaTitle } from '../models/MediaTitles';
-import { ApiMessage } from '../models/ApiMessage';
+import { ApiMessage, ApiMessageBase } from '../models/ApiMessage';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MediaTitlesService {
-
   apiPath: string;
   httpOptions = {
     headers: new HttpHeaders({
@@ -19,7 +18,7 @@ export class MediaTitlesService {
   };
 
   constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    this.apiPath = baseUrl + 'api/mediatitles';
+    this.apiPath = baseUrl + 'api/mediatitles/';
   }
 
   getMediaTitles(page: number = 1, pageSize: number = 5): Observable<ApiMessage<MediaTitle>> {
@@ -32,6 +31,10 @@ export class MediaTitlesService {
       retry(1),
       catchError(this.errorHandler)
     );
+  }
+
+  removeTitle(titleId: number) {
+    return this.http.delete(this.apiPath + titleId).pipe(catchError(this.errorHandler));
   }
 
   errorHandler(error) {

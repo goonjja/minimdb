@@ -26,12 +26,14 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 
 import { MediaTitlesService } from './services/media-titles.service';
+import { MediaTitleAddEditComponent } from './media-title-add-edit/media-title-add-edit.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     MediaTitlesComponent,
+    MediaTitleAddEditComponent,
   ],
   imports: [
     BrowserModule,

@@ -19,7 +19,7 @@ export class MediaTitlesComponent implements AfterViewInit, OnInit {
   dataSource: MediaTitlesDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['id', 'name', 'type', 'plot'];
+  displayedColumns = ['id', 'name', 'type', 'plot', 'ops'];
 
   constructor(private titlesService: MediaTitlesService) {
 
@@ -43,5 +43,9 @@ export class MediaTitlesComponent implements AfterViewInit, OnInit {
         this.paginator.pageIndex + 1,
         this.paginator.pageSize
     );
+  }
+
+  remove(titleId: number) {
+    this.titlesService.removeTitle(titleId).subscribe(() => this.loadPage());
   }
 }

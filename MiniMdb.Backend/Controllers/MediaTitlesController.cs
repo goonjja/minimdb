@@ -6,12 +6,14 @@ using MiniMdb.Backend.Shared;
 using MiniMdb.Backend.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MiniMdb.Backend.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    [Produces("application/json")]
     public class MediaTitlesController : ControllerBase
     {
         private readonly IMediaTitlesService _service;
@@ -30,7 +32,7 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="pageSize">page size</param>
         /// <returns>Page of MediaTitle listing</returns>
         [HttpGet]
-        public async Task<ActionResult<DataPage<MediaTitleVm>>> GetListing
+        public async Task<ActionResult<ApiMessage<MediaTitleVm>>> GetListing
         (
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 5
@@ -41,51 +43,54 @@ namespace MiniMdb.Backend.Controllers
             page = Math.Max(1, page);
 
             var dataPage = await _service.List(page, pageSize);
-            return new DataPage<MediaTitleVm>(
-                _mapper.Map<IEnumerable<MediaTitleVm>>(dataPage.Items),
-                dataPage.Count, dataPage.Page, dataPage.PageSize
-            );
+            return new ApiMessage<MediaTitleVm>
+            {
+                Data = _mapper.Map<IEnumerable<MediaTitleVm>>(dataPage.Items).ToArray(),
+                Pagination = new ApiPagination(dataPage.Page, dataPage.PageSize, dataPage.Count)
+            };
         }
 
 
         // GET: api/MediaTitles/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MediaTitleVm>> Get(int id)
+        public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Get(int id)
         {
-            return _mapper.Map<MediaTitleVm>(await _service.Get(id));
+            return ApiMessage.From(_mapper.Map<MediaTitleVm>(await _service.Get(id)));
         }
 
         // POST: api/MediaTitles
         [HttpPost]
-        public async Task Post([FromBody] MediaTitleVm title)
+        public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Post([FromBody] MediaTitleVm title)
         {
-            if (title.Type == Shared.MediaTitleType.Movie)
+            if (title.Type == MediaTitleType.Movie)
             {
                 var movie = _mapper.Map<Movie>(title);
                 await _service.Add(movie);
             }
-            else if (title.Type == Shared.MediaTitleType.Series)
+            else if (title.Type == MediaTitleType.Series)
             {
                 var series = _mapper.Map<Series>(title);
                 await _service.Add(series);
             }
+            return ApiMessage.From(title);
         }
 
         // PUT: api/MediaTitles/5
         [HttpPut("{id}")]
-        public async Task Put(int id, [FromBody] MediaTitleVm title)
+        public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Put(int id, [FromBody] MediaTitleVm title)
         {
             title.Id = id;
-            if (title.Type == Shared.MediaTitleType.Movie)
+            if (title.Type == MediaTitleType.Movie)
             {
                 var movie = _mapper.Map<Movie>(title);
                 await _service.Update(movie);
             }
-            else if (title.Type == Shared.MediaTitleType.Series)
+            else if (title.Type == MediaTitleType.Series)
             {
                 var series = _mapper.Map<Series>(title);
                 await _service.Update(series);
             }
+            return ApiMessage.From(title);
         }
 
         // DELETE: api/ApiWithActions/5

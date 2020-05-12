@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MiniMdb.Backend.Data;
+using MiniMdb.Backend.Helpers;
 using MiniMdb.Backend.Mappings;
 using MiniMdb.Backend.Services;
 using System;
@@ -32,13 +33,17 @@ namespace MiniMdb.Backend
                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             );
 
-            services.AddControllersWithViews();
+            services.AddControllers().AddJsonOptions(json => {
+                json.JsonSerializerOptions.IgnoreNullValues = true;
+            });
             services.AddRazorPages();
 
             services.AddMvcCore()
                 .AddCors()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
                 .AddApiExplorer();
+            services.AddMvc(options => options.Filters.Add(new ValidRequestFilter()));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MiniMdb API", Version = "v1" });
@@ -68,9 +73,10 @@ namespace MiniMdb.Backend
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
             mapper.ConfigurationProvider.CompileMappings();
 
+            app.UseExceptionHandler("/error");
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
             }
             else
             {

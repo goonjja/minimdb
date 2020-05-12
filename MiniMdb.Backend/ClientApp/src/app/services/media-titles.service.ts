@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { retry, catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { MediaTitle } from '../models/MediaTitles';
-import { DataPage } from '../models/DataPage';
+import { ApiMessage } from '../models/ApiMessage';
 
 @Injectable({
   providedIn: 'root'
@@ -22,12 +22,12 @@ export class MediaTitlesService {
     this.apiPath = baseUrl + 'api/mediatitles';
   }
 
-  getMediaTitles(page: number = 1, pageSize: number = 5): Observable<DataPage<MediaTitle>> {
+  getMediaTitles(page: number = 1, pageSize: number = 5): Observable<ApiMessage<MediaTitle>> {
     const params = new HttpParams()
     .set('page', page.toString())
     .set('pageSize', pageSize.toString());
 
-    return this.http.get<DataPage<MediaTitle>>(this.apiPath, {params})
+    return this.http.get<ApiMessage<MediaTitle>>(this.apiPath, {params})
     .pipe(
       retry(1),
       catchError(this.errorHandler)

@@ -12,8 +12,12 @@ namespace MiniMdb.Backend.Services
     {
         Task<long> Add(Movie movie);
         Task<long> Add(Series series);
+
+        Task<MediaTitle> Get(long id);
+
         Task<bool> Update(Movie movie);
         Task<bool> Update(Series series);
+
         Task<bool> Delete(long id);
     }
 
@@ -42,6 +46,11 @@ namespace MiniMdb.Backend.Services
             await _dbContext.SaveChangesAsync();
             _logger.LogTrace("Saved series: {@m}", series);
             return series.Id;
+        }
+
+        public async Task<MediaTitle> Get(long id)
+        {
+            return await _dbContext.Titles.FindAsync(id); ;
         }
 
         public async Task<bool> Update(Movie movie)

@@ -1,11 +1,12 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MiniMdb.Backend.Data;
+using MiniMdb.Backend.Mappings;
 using MiniMdb.Backend.Services;
 
 namespace MiniMdb.Backend
@@ -26,12 +27,22 @@ namespace MiniMdb.Backend
                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             );
 
+            services.AddControllersWithViews();
+            services.AddRazorPages();
+
+            services.AddAutoMapper(typeof(VmMappingProfile));
+
             services.AddSingleton<ITimeService, TimeService>();
             services.AddTransient<IMediaTitlesService, MediaTitlesService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Initialize AutoMapper
+            var mapper = app.ApplicationServices.GetRequiredService<IMapper>();
+            mapper.ConfigurationProvider.AssertConfigurationIsValid();
+            mapper.ConfigurationProvider.CompileMappings();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -41,10 +52,10 @@ namespace MiniMdb.Backend
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MiniMdb.Backend.ViewModels
 {
-    //[Validator(typeof(MediaTitleVmValidator))]
     public class MediaTitleVm
     {
         public long? Id { get; set; }
@@ -24,14 +23,4 @@ namespace MiniMdb.Backend.ViewModels
 
         public long UpdatedAt { get; set; }
     }
-
-    //public class MediaTitleVmValidator : AbstractValidator<MediaTitleVm>
-    //{
-    //    public MediaTitleVmValidator()
-    //    {
-    //        RuleFor(vm => vm.Name).NotEmpty().WithMessage("Name cannot be empty");
-    //        RuleFor(vm => vm.Plot).Length(16, 1000).WithMessage("Plot must be at between 16 and 1000 characters long");
-
-    //    }
-    //}
 }

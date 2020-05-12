@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MiniMdb.Auth;
 using MiniMdb.Backend.Models;
 using MiniMdb.Backend.Services;
 using MiniMdb.Backend.Shared;
@@ -73,6 +75,7 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="title">New media title payload</param>
         /// <returns>Saved data</returns>
         [HttpPost]
+        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Post([FromBody] MediaTitleVm title)
         {
             if (title.Type == MediaTitleType.Movie)
@@ -97,6 +100,7 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="title">Media title payload</param>
         /// <returns>Saved data</returns>
         [HttpPut("{id}")]
+        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Put(int id, [FromBody] MediaTitleVm title)
         {
             title.Id = id;
@@ -119,6 +123,7 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="id">Media title id</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
         public async Task Delete(int id)
         {
             // TODO return result or error

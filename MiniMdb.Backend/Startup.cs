@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MiniMdb.Auth;
 using MiniMdb.Backend.Data;
 using MiniMdb.Backend.Helpers;
 using MiniMdb.Backend.Mappings;
@@ -60,6 +61,17 @@ namespace MiniMdb.Backend
             services.AddSingleton<ITimeService, TimeService>();
             services.AddTransient<IMediaTitlesService, MediaTitlesService>();
 
+            #region Auth
+
+            services.AddTokenAuthentication("PDv7DrqznYL6nv7DrqzjnQYO9JxIsWdcjnQYL6nu0f", new JwtSettings { ValidFor = TimeSpan.FromMinutes(10) });
+            services.AddAuthorization(o =>
+            {
+                o.AddPolicy(MiniMdbRoles.AdminPolicy, _ => _.RequireRole(MiniMdbRoles.AdminRole));
+                o.AddPolicy(MiniMdbRoles.UserPolicy, _ => _.RequireRole(MiniMdbRoles.UserRole));
+            });
+
+            #endregion
+
             #region Swagger docs
 
             services.AddSwaggerGen(c =>
@@ -106,6 +118,8 @@ namespace MiniMdb.Backend
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "MiniMdb API V1"));
 
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

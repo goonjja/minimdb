@@ -4,6 +4,28 @@
     <mat-spinner></mat-spinner>
   </div>
 
+  <form  (ngSubmit)="search()">
+    <!-- Name filter -->
+    <mat-form-field appearance="fill" [hideRequiredMarker]=(true)>
+      <mat-label>Filter by name:</mat-label>
+      <input matInput placeholder="Name" [formControl]="nameFilter"/>
+    </mat-form-field>
+
+    <!-- Type filter -->
+    <mat-form-field appearance="fill" [hideRequiredMarker]=(true)>
+      <mat-label>Search by type:</mat-label>
+      <select matNativeControl [formControl]="typeFilter">
+        <option value={{null}}>Any</option>
+        <option value={{0}}>Movie</option>
+        <option value={{1}}>Series</option>
+      </select>
+    </mat-form-field>
+
+    <button type="submit" mat-icon-button appearance="fill">
+      <mat-icon>search</mat-icon>
+    </button>
+  </form>
+
   <table mat-table class="full-width-table" matSort aria-label="Elements">
     <!-- Id Column -->
     <ng-container matColumnDef="id">

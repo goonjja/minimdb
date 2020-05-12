@@ -4,8 +4,9 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { MediaTitlesDataSource } from './media-titles-datasource';
 import { MediaTitlesService } from '../services/media-titles.service';
-import { MediaTitle } from '../models/MediaTitles';
+import { MediaTitle, MediaTitleType } from '../models/MediaTitles';
 import { tap } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-media-titles',
@@ -16,6 +17,10 @@ export class MediaTitlesComponent implements AfterViewInit, OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<MediaTitle>;
+
+  nameFilter = new FormControl('');
+  typeFilter = new FormControl(0);
+
   dataSource: MediaTitlesDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
@@ -40,9 +45,20 @@ export class MediaTitlesComponent implements AfterViewInit, OnInit {
 
   loadPage() {
     this.dataSource.loadTitles(
+        this.nameFilter.value,
+        this.typeFilter.value,
         this.paginator.pageIndex + 1,
         this.paginator.pageSize
     );
+  }
+
+  search() {
+    this.dataSource.loadTitles(
+      this.nameFilter.value,
+      this.typeFilter.value,
+      1,
+      this.paginator.pageSize
+  );
   }
 
   remove(titleId: number) {

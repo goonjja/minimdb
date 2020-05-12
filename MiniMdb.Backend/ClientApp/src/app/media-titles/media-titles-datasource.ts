@@ -4,7 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { map, catchError, finalize } from 'rxjs/operators';
 import { Observable, of as observableOf, merge, BehaviorSubject, of } from 'rxjs';
 import { MediaTitlesService } from '../services/media-titles.service';
-import { MediaTitle } from '../models/MediaTitles';
+import { MediaTitle, MediaTitleType } from '../models/MediaTitles';
 import { ApiMessage } from '../models/ApiMessage';
 
 /**
@@ -43,10 +43,10 @@ export class MediaTitlesDataSource extends DataSource<MediaTitle> {
     this.loadingSubject.complete();
   }
 
-  loadTitles(page = 1, pageSize = 5) {
+  loadTitles(nameFilter: string = null, typeFilter: MediaTitleType = null, page = 1, pageSize = 5) {
     this.loadingSubject.next(true);
 
-    this.titlesService.getMediaTitles(page, pageSize).pipe(
+    this.titlesService.getMediaTitles(nameFilter, typeFilter, page, pageSize).pipe(
       catchError(() => of([])),
       finalize(() => this.loadingSubject.next(false))
     ).subscribe(

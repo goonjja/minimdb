@@ -34,6 +34,8 @@ namespace MiniMdb.Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> GetListing
         (
+            [FromQuery] MediaTitleType? typeFilter = null,
+            [FromQuery] string nameFilter = null,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 5
         )
@@ -42,7 +44,7 @@ namespace MiniMdb.Backend.Controllers
             pageSize = Math.Min(Math.Max(pageSize, 1), 10);
             page = Math.Max(1, page);
 
-            var dataPage = await _service.List(page, pageSize);
+            var dataPage = await _service.List(new MediaTitleSearchCriteria(nameFilter, typeFilter), page, pageSize);
             return new ApiMessage<MediaTitleVm>
             {
                 Data = _mapper.Map<IEnumerable<MediaTitleVm>>(dataPage.Items).ToArray(),

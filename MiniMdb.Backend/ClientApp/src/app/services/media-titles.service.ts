@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { retry, catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { MediaTitle } from '../models/MediaTitles';
+import { MediaTitle, MediaTitleType } from '../models/MediaTitles';
 import { ApiMessage, ApiMessageBase } from '../models/ApiMessage';
 
 @Injectable({
@@ -25,10 +25,21 @@ export class MediaTitlesService {
     return this.http.get<ApiMessage<MediaTitle>>(this.apiPath + id).pipe(retry(1), catchError(this.errorHandler));
   }
 
-  getMediaTitles(page: number = 1, pageSize: number = 5): Observable<ApiMessage<MediaTitle>> {
-    const params = new HttpParams()
+  getMediaTitles(
+    nameFilter: string = null,
+    typeFilter: MediaTitleType = null,
+    page = 1,
+    pageSize = 5
+  ): Observable<ApiMessage<MediaTitle>> {
+    let params = new HttpParams()
     .set('page', page.toString())
     .set('pageSize', pageSize.toString());
+    if (nameFilter != null) {
+      params = params.set('nameFilter', nameFilter);
+    }
+    if (typeFilter != null) {
+      params = params.set('typeFilter', typeFilter.toString());
+    }
 
     return this.http.get<ApiMessage<MediaTitle>>(this.apiPath, {params})
     .pipe(

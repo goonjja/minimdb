@@ -9,6 +9,18 @@ using System.Threading.Tasks;
 
 namespace MiniMdb.Backend.Services
 {
+    public struct MediaTitleSearchCriteria
+    {
+        public string Name { get; }
+        public MediaTitleType? Type { get; }
+
+        public MediaTitleSearchCriteria(string name, MediaTitleType? type = null)
+        {
+            Name = name;
+            Type = type;
+        }
+    }
+
     public interface IMediaTitlesService
     {
         Task<long> Add(Movie movie);
@@ -21,7 +33,7 @@ namespace MiniMdb.Backend.Services
 
         Task<bool> Delete(long id);
 
-        Task<DataPage<MediaTitle>> List(int page, int pageSize);
+        Task<DataPage<MediaTitle>> List(MediaTitleSearchCriteria searchCriteria, int page, int pageSize);
     }
 
     public class MediaTitlesService : IMediaTitlesService
@@ -106,10 +118,20 @@ namespace MiniMdb.Backend.Services
             return true;
         }
 
-        public async Task<DataPage<MediaTitle>> List(int page, int pageSize)
+        public async Task<DataPage<MediaTitle>> List(MediaTitleSearchCriteria searchCriteria, int page, int pageSize)
         {
-            // TODO validation of parameters
-            return await DataPage<MediaTitle>.CreateAsync(_dbContext.Titles, page, pageSize);
+            var titles = _dbContext.Titles.AsQueryable();
+            if(searchCriteria.Type.HasValue)
+            {
+                titles = titles.Where(t => t.Type == searchCriteria.Type.Value);
+            }
+            
+            if (!string.IsNullOrEmpty(searchCriteria.Name))
+            {
+                titles = titles.Where(t => EF.Functions.ILike(t.Name, $"{searchCriteria.Name}%"));
+            }
+            
+            return await DataPage<MediaTitle>.CreateAsync(titles, page, pageSize);
         }
     }
 }

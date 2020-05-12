@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MiniMdb.Backend.Data;
+using MiniMdb.Backend.Services;
 
 namespace MiniMdb.Backend
 {
@@ -24,6 +25,9 @@ namespace MiniMdb.Backend
                .UseNpgsql(Configuration.GetConnectionString("MainDb"))
                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             );
+
+            services.AddSingleton<ITimeService, TimeService>();
+            services.AddTransient<IMediaTitlesService, MediaTitlesService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

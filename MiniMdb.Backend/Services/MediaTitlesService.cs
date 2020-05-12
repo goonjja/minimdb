@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using MiniMdb.Backend.Data;
 using MiniMdb.Backend.Models;
+using MiniMdb.Backend.Shared;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,6 +20,8 @@ namespace MiniMdb.Backend.Services
         Task<bool> Update(Series series);
 
         Task<bool> Delete(long id);
+
+        Task<DataPage<MediaTitle>> List(int page, int pageSize);
     }
 
     public class MediaTitlesService : IMediaTitlesService
@@ -99,6 +102,12 @@ namespace MiniMdb.Backend.Services
             await _dbContext.SaveChangesAsync();
             _logger.LogTrace("Deleted title: {@m}", entity);
             return true;
+        }
+
+        public async Task<DataPage<MediaTitle>> List(int page, int pageSize)
+        {
+            // TODO validation of parameters
+            return await DataPage<MediaTitle>.CreateAsync(_dbContext.Titles, page, pageSize);
         }
     }
 }

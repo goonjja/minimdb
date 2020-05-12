@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using MiniMdb.Backend.Models;
 using MiniMdb.Backend.Services;
+using MiniMdb.Backend.Shared;
 using MiniMdb.Backend.ViewModels;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MiniMdb.Backend.Controllers
@@ -20,8 +23,27 @@ namespace MiniMdb.Backend.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<DataPage<MediaTitleVm>>> GetListing
+        (
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 5
+        )
+        {
+            // restrict page size to be between 1 and 10
+            pageSize = Math.Min(Math.Max(pageSize, 1), 10);
+            page = Math.Max(1, page);
+
+            var dataPage = await _service.List(page, pageSize);
+            return new DataPage<MediaTitleVm>(
+                _mapper.Map<IEnumerable<MediaTitleVm>>(dataPage.Items),
+                dataPage.Count, dataPage.Page, dataPage.PageSize
+            );
+        }
+
+
         // GET: api/MediaTitles/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<MediaTitleVm>> Get(int id)
         {
             return _mapper.Map<MediaTitleVm>(await _service.Get(id));

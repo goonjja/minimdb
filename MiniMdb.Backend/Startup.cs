@@ -39,7 +39,7 @@ namespace MiniMdb.Backend
             services.AddRazorPages();
 
             services.AddMvcCore()
-                .AddCors()
+                //.AddCors()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
                 .AddApiExplorer();
             services.AddMvc(options => options.Filters.Add(new ValidRequestFilter()));

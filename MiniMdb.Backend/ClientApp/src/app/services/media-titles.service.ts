@@ -21,6 +21,10 @@ export class MediaTitlesService {
     this.apiPath = baseUrl + 'api/mediatitles/';
   }
 
+  getMediaTitle(id: number): Observable<ApiMessage<MediaTitle>> {
+    return this.http.get<ApiMessage<MediaTitle>>(this.apiPath + id).pipe(retry(1), catchError(this.errorHandler));
+  }
+
   getMediaTitles(page: number = 1, pageSize: number = 5): Observable<ApiMessage<MediaTitle>> {
     const params = new HttpParams()
     .set('page', page.toString())
@@ -35,6 +39,22 @@ export class MediaTitlesService {
 
   removeTitle(titleId: number) {
     return this.http.delete(this.apiPath + titleId).pipe(catchError(this.errorHandler));
+  }
+
+  saveTitle(mediaTitle: MediaTitle): Observable<ApiMessage<MediaTitle>> {
+
+    return this.http.post<ApiMessage<MediaTitle>>(this.apiPath, JSON.stringify(mediaTitle), this.httpOptions).pipe(
+      retry(1),
+      catchError(this.errorHandler)
+    );
+  }
+
+  updateTitle(mediaTitle: MediaTitle): Observable<ApiMessage<MediaTitle>> {
+
+    return this.http.put<ApiMessage<MediaTitle>>(this.apiPath + mediaTitle.id, JSON.stringify(mediaTitle), this.httpOptions).pipe(
+      retry(1),
+      catchError(this.errorHandler)
+    );
   }
 
   errorHandler(error) {

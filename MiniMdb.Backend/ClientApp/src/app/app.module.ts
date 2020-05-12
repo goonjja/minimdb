@@ -18,6 +18,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
 import { HomeComponent } from './home/home.component';
 import { MediaTitlesComponent } from './media-titles/media-titles.component';
 import { MatTableModule } from '@angular/material/table';
@@ -27,6 +31,7 @@ import { MatSortModule } from '@angular/material/sort';
 
 import { MediaTitlesService } from './services/media-titles.service';
 import { MediaTitleAddEditComponent } from './media-title-add-edit/media-title-add-edit.component';
+import { MediaTitleViewComponent } from './media-title-view/media-title-view.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +39,7 @@ import { MediaTitleAddEditComponent } from './media-title-add-edit/media-title-a
     HomeComponent,
     MediaTitlesComponent,
     MediaTitleAddEditComponent,
+    MediaTitleViewComponent,
   ],
   imports: [
     BrowserModule,
@@ -53,7 +59,11 @@ import { MediaTitleAddEditComponent } from './media-title-add-edit/media-title-a
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule
   ],
   providers: [MediaTitlesService],
   bootstrap: [AppComponent]

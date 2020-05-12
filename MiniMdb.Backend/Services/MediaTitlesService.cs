@@ -56,6 +56,7 @@ namespace MiniMdb.Backend.Services
             return await _dbContext.Titles.FindAsync(id); ;
         }
 
+        // todo read and update
         public async Task<bool> Update(Movie movie)
         {
             _dbContext.Movies.Update(movie);
@@ -74,6 +75,7 @@ namespace MiniMdb.Backend.Services
             return true;
         }
 
+        // todo read and update
         public async Task<bool> Update(Series series)
         {
             _dbContext.Series.Update(series);

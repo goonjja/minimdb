@@ -1,0 +1,13 @@
+<ng-container *ngIf="(mediaTitle$ | async) as mediaTitle; else loading">
+
+  <mat-card>
+    <mat-card-header>
+      <h1>{{ mediaTitle.name }}</h1>
+    </mat-card-header>
+    <mat-card-content>
+      <div>{{ mediaTitle.type }}</div>
+      <h2>{{ mediaTitle.plot }}</h2>
+    </mat-card-content>
+  </mat-card>
+</ng-container>
+<ng-template #loading>Loading…</ng-template>

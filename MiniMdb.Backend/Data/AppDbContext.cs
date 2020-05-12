@@ -30,6 +30,9 @@ namespace MiniMdb.Backend.Data
                 .HasDiscriminator<MediaTitleType>(nameof(MediaTitle.Type))
                 .HasValue<Movie>(MediaTitleType.Movie)
                 .HasValue<Series>(MediaTitleType.Series);
+
+            builder.Entity<MediaTitle>().HasIndex(p => p.Name);
+            builder.Entity<MediaTitle>().HasIndex(p => p.Type);
         }
     }
 }

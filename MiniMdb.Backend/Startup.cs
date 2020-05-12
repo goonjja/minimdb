@@ -1,5 +1,4 @@
 using AutoMapper;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -32,17 +31,36 @@ namespace MiniMdb.Backend
                .UseNpgsql(Configuration.GetConnectionString("MainDb"))
                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             );
-
-            services.AddControllers().AddJsonOptions(json => {
-                json.JsonSerializerOptions.IgnoreNullValues = true;
+            // In production, the Angular files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
             });
+
+            services.AddControllers()
+                // Make error responses unified
+                .ConfigureApiBehaviorOptions(o => o.SuppressModelStateInvalidFilter = true)
+                .AddJsonOptions(json =>
+                {
+                    json.JsonSerializerOptions.IgnoreNullValues = true;
+                });
             services.AddRazorPages();
 
+            services.AddSingleton<ValidRequestFilter>();
             services.AddMvcCore()
                 //.AddCors()
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
                 .AddApiExplorer();
-            services.AddMvc(options => options.Filters.Add(new ValidRequestFilter()));
+            services.AddMvc().AddMvcOptions(o =>
+            {
+                o.Filters.Add<ValidRequestFilter>();
+            });
+
+            services.AddAutoMapper(typeof(VmMappingProfile));
+
+            services.AddSingleton<ITimeService, TimeService>();
+            services.AddTransient<IMediaTitlesService, MediaTitlesService>();
+
+            #region Swagger docs
 
             services.AddSwaggerGen(c =>
             {
@@ -54,16 +72,7 @@ namespace MiniMdb.Backend
                 c.IncludeXmlComments(xmlPath);
             });
 
-            // In production, the Angular files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/dist";
-            });
-
-            services.AddAutoMapper(typeof(VmMappingProfile));
-
-            services.AddSingleton<ITimeService, TimeService>();
-            services.AddTransient<IMediaTitlesService, MediaTitlesService>();
+            #endregion
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -102,7 +111,7 @@ namespace MiniMdb.Backend
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
+                //endpoints.MapRazorPages();
             });
             app.UseSpa(spa =>
             {

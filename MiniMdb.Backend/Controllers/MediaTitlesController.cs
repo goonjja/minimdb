@@ -28,8 +28,10 @@ namespace MiniMdb.Backend.Controllers
         /// <summary>
         /// Returns paginated listing of MediaTitle entities.
         /// </summary>
-        /// <param name="page">page number (starting from 1)</param>
-        /// <param name="pageSize">page size</param>
+        /// <param name="typeFilter">filter by type</param>
+        /// <param name="nameFilter">filter by name (starting with)</param>
+        /// <param name="page">Page number (starting from 1)</param>
+        /// <param name="pageSize">Page size</param>
         /// <returns>Page of MediaTitle listing</returns>
         [HttpGet]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> GetListing
@@ -53,14 +55,23 @@ namespace MiniMdb.Backend.Controllers
         }
 
 
-        // GET: api/MediaTitles/5
+        /// <summary>
+        /// Get MediaTitle by id
+        /// </summary>
+        /// <param name="id">Title id</param>
+        /// <returns>Entity or error</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Get(int id)
         {
+            // TODO return error if missing
             return ApiMessage.From(_mapper.Map<MediaTitleVm>(await _service.Get(id)));
         }
 
-        // POST: api/MediaTitles
+        /// <summary>
+        /// Save new MediaTitle
+        /// </summary>
+        /// <param name="title">New media title payload</param>
+        /// <returns>Saved data</returns>
         [HttpPost]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Post([FromBody] MediaTitleVm title)
         {
@@ -77,7 +88,12 @@ namespace MiniMdb.Backend.Controllers
             return ApiMessage.From(title);
         }
 
-        // PUT: api/MediaTitles/5
+        /// <summary>
+        /// Update existing MediaTitle by id
+        /// </summary>
+        /// <param name="id">Title id</param>
+        /// <param name="title">Media title payload</param>
+        /// <returns>Saved data</returns>
         [HttpPut("{id}")]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Put(int id, [FromBody] MediaTitleVm title)
         {
@@ -95,10 +111,15 @@ namespace MiniMdb.Backend.Controllers
             return ApiMessage.From(title);
         }
 
-        // DELETE: api/ApiWithActions/5
+        /// <summary>
+        /// Deletes MediaTitle by its id
+        /// </summary>
+        /// <param name="id">Media title id</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task Delete(int id)
         {
+            // TODO return result or error
             await _service.Delete(id);
         }
     }

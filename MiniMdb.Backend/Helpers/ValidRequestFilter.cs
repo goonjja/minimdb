@@ -9,7 +9,6 @@ namespace MiniMdb.Backend.Helpers
     {
         public void OnActionExecuted(ActionExecutedContext context)
         {
-
         }
 
         public void OnActionExecuting(ActionExecutingContext context)

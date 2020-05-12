@@ -19,12 +19,12 @@ export class MediaTitlesComponent implements AfterViewInit, OnInit {
   @ViewChild(MatTable) table: MatTable<MediaTitle>;
 
   nameFilter = new FormControl('');
-  typeFilter = new FormControl(0);
+  typeFilter = new FormControl(null);
 
   dataSource: MediaTitlesDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['id', 'name', 'type', 'plot', 'ops'];
+  displayedColumns = ['ops', 'id', 'name', 'type', 'plot'];
 
   constructor(private titlesService: MediaTitlesService) {
 

@@ -14,6 +14,7 @@ export class MediaTitleAddEditComponent implements OnInit {
   mediaTitle: MediaTitle;
   titleId: number;
   existing: boolean;
+  action: string;
 
   form: FormGroup;
   formType = 'type';
@@ -36,13 +37,14 @@ export class MediaTitleAddEditComponent implements OnInit {
       {
         id: 0,
         type: [MediaTitleType.Movie],
-        name: ['', [Validators.required]],
-        plot: ['', [Validators.required]],
-      }
+        name: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(100)]],
+        plot: ['', [Validators.required, Validators.minLength(16), Validators.maxLength(1000)]],
+      }, [Validators.required, Validators.length]
     )
   }
 
   ngOnInit(): void {
+    this.action = 'Create media title';
     if(this.titleId > 0) {
       this.existing = true;
       this.loadMediaTitle();
@@ -56,6 +58,7 @@ export class MediaTitleAddEditComponent implements OnInit {
         this.form.controls[this.formType].setValue(this.mediaTitle.type);
         this.form.controls[this.formName].setValue(this.mediaTitle.name);
         this.form.controls[this.formPlot].setValue(this.mediaTitle.plot);
+        this.action = 'Edit media title';
       } else {
         // todo display error
       }
@@ -75,12 +78,18 @@ export class MediaTitleAddEditComponent implements OnInit {
       releaseDate: 0
     };
     if (this.existing) {
-      this.titleService.updateTitle(mediaTitle).subscribe(d => this.router.navigate([this.router.url]));
+      this.titleService.updateTitle(mediaTitle).subscribe(d => {
+        if (d.data != null && d.data.length > 0){
+          this.router.navigate(['/title', d.data[0].id])
+        }
+      });
     } else {
-      this.titleService.saveTitle(mediaTitle).subscribe(d => this.router.navigate([this.router.url]));
+      this.titleService.saveTitle(mediaTitle).subscribe(d => {
+        if (d.data != null && d.data.length > 0){
+          this.router.navigate(['/title', d.data[0].id])
+        }
+      });
     }
-
-    console.log(this.form);
   }
 
   get type() { return this.form.get(this.formType); }

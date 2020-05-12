@@ -79,11 +79,13 @@ namespace MiniMdb.Backend.Controllers
             {
                 var movie = _mapper.Map<Movie>(title);
                 await _service.Add(movie);
+                title.Id = movie.Id;
             }
             else if (title.Type == MediaTitleType.Series)
             {
                 var series = _mapper.Map<Series>(title);
                 await _service.Add(series);
+                title.Id = series.Id;
             }
             return ApiMessage.From(title);
         }

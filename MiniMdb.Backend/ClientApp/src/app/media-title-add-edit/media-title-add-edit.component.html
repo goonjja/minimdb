@@ -1,31 +1,32 @@
-<h1>Editing media title</h1>
-<form [formGroup]="form" (ngSubmit)="save()">
+<form [formGroup]="form" (ngSubmit)="save()" #formDir="ngForm" novalidate>
+  <mat-card>
+    <mat-card-header>
+      <h1>{{action}}</h1>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field style="width: 100%">
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="Name" formControlName="name" />
+        <mat-error *ngIf="name.invalid">Name is required</mat-error>
+      </mat-form-field>
 
-  <mat-list>
-    <mat-list-item>
-      <mat-form-field>
+      <mat-form-field style="width: 100%">
         <mat-label>Type</mat-label>
-        <select matNativeControl required  formControlName="type">
+        <select matNativeControl required formControlName="type">
           <option value={{0}}>Movie</option>
           <option value={{1}}>Series</option>
         </select>
       </mat-form-field>
-    </mat-list-item>
-    <mat-list-item>
-      <mat-form-field>
-        <mat-label>Name</mat-label>
-        <input matInput placeholder="Name" formControlName="name"/>
-      </mat-form-field>
-    </mat-list-item>
-    <mat-list-item>
-      <mat-form-field>
-        <mat-label>Plot</mat-label>
-        <input matInput placeholder="Plot" formControlName="plot"/>
-      </mat-form-field>
-    </mat-list-item>
 
-    <mat-list-item>
+      <mat-form-field style="width: 100%">
+        <mat-label>Plot</mat-label>
+        <textarea matInput placeholder="Plot" formControlName="plot"></textarea>
+        <mat-error *ngIf="plot.invalid">Plot must be at least 16 characters and less than 1000 characters long</mat-error>
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-footer>
       <button mat-button color="primary" type="submit">Save</button>
-    </mat-list-item>
-  </mat-list>
+      <button mat-button color="primary" [routerLink]="['/title/', titleId]">Cancel</button>
+    </mat-card-footer>
+  </mat-card>
 </form>

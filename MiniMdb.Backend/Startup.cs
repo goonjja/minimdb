@@ -1,13 +1,18 @@
 using AutoMapper;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using MiniMdb.Backend.Data;
 using MiniMdb.Backend.Mappings;
 using MiniMdb.Backend.Services;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace MiniMdb.Backend
 {
@@ -29,6 +34,20 @@ namespace MiniMdb.Backend
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddMvcCore()
+                .AddCors()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
+                .AddApiExplorer();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MiniMdb API", Version = "v1" });
+
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -68,6 +87,9 @@ namespace MiniMdb.Backend
             }
 
             app.UseRouting();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "MiniMdb API V1"));
 
             app.UseEndpoints(endpoints =>
             {

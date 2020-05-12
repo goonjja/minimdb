@@ -23,6 +23,12 @@ namespace MiniMdb.Backend.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Returns paginated listing of MediaTitle entities.
+        /// </summary>
+        /// <param name="page">page number (starting from 1)</param>
+        /// <param name="pageSize">page size</param>
+        /// <returns>Page of MediaTitle listing</returns>
         [HttpGet]
         public async Task<ActionResult<DataPage<MediaTitleVm>>> GetListing
         (

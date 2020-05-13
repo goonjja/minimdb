@@ -4,7 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { MediaTitlesDataSource } from './media-titles-datasource';
 import { MediaTitlesService } from '../services/media-titles.service';
-import { MediaTitle, MediaTitleType } from '../models/MediaTitles';
+import { MediaTitle, MediaTitleType, MediaTitleTypeName } from '../models/MediaTitles';
 import { tap } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
@@ -21,15 +21,17 @@ export class MediaTitlesComponent implements AfterViewInit, OnInit {
 
   nameFilter = new FormControl('');
   typeFilter = new FormControl(null);
+  titleTypes: Map<number, string>;
 
   dataSource: MediaTitlesDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['ops', 'id', 'name', 'type', 'plot'];
+  displayedColumns = ['ops', 'id', 'type', 'name', 'plot'];
   isAuthenticated = false;
   isAdmin = false;
 
   constructor(private titlesService: MediaTitlesService, private authService: AuthorizeService) {
+    this.titleTypes = MediaTitleTypeName;
     this.isAuthenticated = authService.isAuthenticated();
     this.isAdmin = authService.isAdmin();
     if (!this.isAuthenticated || !this.isAdmin) {

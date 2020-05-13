@@ -136,6 +136,17 @@ namespace MiniMdb.Backend
 
             #endregion
 
+            #region Apply migrations, seed data
+
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                db.Database.Migrate();
+                new DataSeed(db).Apply();
+            }
+
+            #endregion
+
             var supportedCultures = new[]
             {
                 new CultureInfo("en-US"),
@@ -168,7 +179,7 @@ namespace MiniMdb.Backend
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            
+
             if (!env.IsDevelopment())
             {
                 app.UseSpaStaticFiles();
@@ -190,7 +201,7 @@ namespace MiniMdb.Backend
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
-                
+
                 if (env.IsDevelopment())
                 {
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");

@@ -77,7 +77,7 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="title">New media title payload</param>
         /// <returns>Saved data</returns>
         [HttpPost]
-        //[Authorize(Policy = MiniMdbRoles.AdminPolicy)]
+        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Post([FromBody] MediaTitleVm title)
         {
             if (title.Type == MediaTitleType.Movie)
@@ -102,7 +102,7 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="title">Media title payload</param>
         /// <returns>Saved data</returns>
         [HttpPut("{id}")]
-        //[Authorize(Policy = MiniMdbRoles.AdminPolicy)]
+        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Put(int id, [FromBody] MediaTitleVm title)
         {
             // find first to determine type
@@ -130,7 +130,7 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="id">Media title id</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        //[Authorize(Policy = MiniMdbRoles.AdminPolicy)]
+        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Delete(int id)
         {
             var entity = await _service.Delete(id);

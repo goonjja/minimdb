@@ -3,7 +3,6 @@ using MiniMdb.Auth;
 using MiniMdb.Backend.Shared;
 using MiniMdb.Backend.ViewModels;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MiniMdb.Backend.Controllers
 {
@@ -24,6 +23,14 @@ namespace MiniMdb.Backend.Controllers
             _jwtFactory = jwtFactory;
         }
 
+        /// <summary>
+        /// Authenticate and get JWT token.
+        /// Example users: 
+        /// 1. Admin role, admin@example.com, m3g@pA$$W0rDDD
+        /// 2. User role, anyone@example.com, w3@kpa$$w0rd
+        /// </summary>
+        /// <param name="req">Login and password</param>
+        /// <returns>JWT Token or error</returns>
         [HttpPost]
         public ActionResult<ApiMessage<string>> Authenticate([FromBody] LoginRequest req)
         {
@@ -35,11 +42,10 @@ namespace MiniMdb.Backend.Controllers
         }
 
         /// <summary>
-        /// Example method with exception
+        /// Example method with exception cotnaining sensitive information
         /// </summary>
-        /// <returns></returns>
         [HttpGet("/throw")]
-        public async Task<ActionResult<ApiMessage<string>>> FailAuth()
+        public ActionResult<ApiMessage<string>> FailAuth()
         {
             throw new System.Exception("It contains sensitive information: " + Users[0].Email);
         }

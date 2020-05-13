@@ -33,28 +33,18 @@ namespace MiniMdb.Backend
                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             );
             // In production, the Angular files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/dist";
-            });
+            services.AddSpaStaticFiles(cfg => cfg.RootPath = "ClientApp/dist");
 
             services.AddControllers()
                 // Make error responses unified
                 .ConfigureApiBehaviorOptions(o => o.SuppressModelStateInvalidFilter = true)
-                .AddJsonOptions(json =>
-                {
-                    json.JsonSerializerOptions.IgnoreNullValues = true;
-                });
-            services.AddRazorPages();
+                .AddJsonOptions(json => json.JsonSerializerOptions.IgnoreNullValues = true);
 
             services.AddSingleton<ValidRequestFilter>();
             services.AddMvcCore()
                 //.AddCors()
                 .AddApiExplorer();
-            services.AddMvc().AddMvcOptions(o =>
-            {
-                o.Filters.Add<ValidRequestFilter>();
-            });
+            services.AddMvc().AddMvcOptions(o => o.Filters.Add<ValidRequestFilter>());
 
             services.AddAutoMapper(typeof(VmMappingProfile));
 
@@ -63,7 +53,10 @@ namespace MiniMdb.Backend
 
             #region Auth
 
-            services.AddTokenAuthentication("PDv7DrqznYL6nv7DrqzjnQYO9JxIsWdcjnQYL6nu0f", new JwtSettings { ValidFor = TimeSpan.FromMinutes(10) });
+            services.AddTokenAuthentication(
+                "zNh23k84AyQ7wcrqoUevaYXgDKBpS5jC",
+                new JwtSettings { ValidFor = TimeSpan.FromMinutes(10) }
+            );
             services.AddAuthorization(o =>
             {
                 o.AddPolicy(MiniMdbRoles.AdminPolicy, _ => _.RequireRole(MiniMdbRoles.AdminRole));
@@ -94,15 +87,15 @@ namespace MiniMdb.Backend
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
             mapper.ConfigurationProvider.CompileMappings();
 
-            app.UseExceptionHandler("/error");
             if (env.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
             }
             else
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                app.UseExceptionHandler("/error");
             }
 
             app.UseHttpsRedirection();
@@ -125,12 +118,11 @@ namespace MiniMdb.Backend
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
-                //endpoints.MapRazorPages();
             });
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
-
+                
                 if (env.IsDevelopment())
                 {
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");

@@ -7,5 +7,7 @@
 
         public const string UserRole = "user";
         public const string UserPolicy = "user";
+
+        public const string AuthenticatedPolicy = "any_user";
     }
 }

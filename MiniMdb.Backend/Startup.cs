@@ -103,6 +103,7 @@ namespace MiniMdb.Backend
             {
                 o.AddPolicy(MiniMdbRoles.AdminPolicy, _ => _.RequireRole(MiniMdbRoles.AdminRole));
                 o.AddPolicy(MiniMdbRoles.UserPolicy, _ => _.RequireRole(MiniMdbRoles.UserRole));
+                o.AddPolicy(MiniMdbRoles.AuthenticatedPolicy, _ => _.RequireAuthenticatedUser());
             });
 
             #endregion

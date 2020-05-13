@@ -12,7 +12,7 @@ const routes: Routes = [
   { path: '', component: MediaTitlesComponent, pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent },
-  { path: 'title/:id', component: MediaTitleViewComponent },
+  { path: 'title/:id', component: MediaTitleViewComponent, canActivate: [AuthorizeGuard] },
   { path: 'add-title', component: MediaTitleAddEditComponent, canActivate: [AuthorizeGuard] },
   { path: 'title/:id/edit', component: MediaTitleAddEditComponent, canActivate: [AuthorizeGuard] },
 ];

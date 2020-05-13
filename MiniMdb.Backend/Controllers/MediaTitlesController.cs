@@ -76,6 +76,7 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="id">Title id</param>
         /// <returns>Entity or error</returns>
         [HttpGet("{id}")]
+        [Authorize(Policy = MiniMdbRoles.AuthenticatedPolicy)]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Get(int id)
         {
             var cacheKey = CacheKeys.MediaTitle(id);

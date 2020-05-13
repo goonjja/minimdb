@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,8 @@ using MiniMdb.Backend.Helpers;
 using MiniMdb.Backend.Mappings;
 using MiniMdb.Backend.Services;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 
@@ -71,6 +74,25 @@ namespace MiniMdb.Backend
 
             #endregion
 
+            #region Localization
+
+            services.AddLocalization();
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new List<CultureInfo>
+                    {
+                        new CultureInfo("en-US"),
+                        new CultureInfo("ru"),
+                        new CultureInfo("si"),
+                    };
+
+                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
+
+            #endregion
+
             #region Auth
 
             services.AddTokenAuthentication(
@@ -113,6 +135,20 @@ namespace MiniMdb.Backend
             logger.LogInformation($"Welcome to: {Configuration["TestMessage"]}");
 
             #endregion
+
+            var supportedCultures = new[]
+            {
+                new CultureInfo("en-US"),
+                new CultureInfo("ru"),
+                new CultureInfo("si"),
+            };
+            var localizationOpts = new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("en-US"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures,
+            };
+            app.UseRequestLocalization(localizationOpts);
 
             // Initialize AutoMapper
             var mapper = app.ApplicationServices.GetRequiredService<IMapper>();

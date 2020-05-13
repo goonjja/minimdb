@@ -33,6 +33,13 @@ import { MediaTitlesService } from './services/media-titles.service';
 import { MediaTitleAddEditComponent } from './media-title-add-edit/media-title-add-edit.component';
 import { MediaTitleViewComponent } from './media-title-view/media-title-view.component';
 
+import { registerLocaleData } from '@angular/common';
+import localeRu from '@angular/common/locales/ru';
+import localeSi from '@angular/common/locales/si';
+
+registerLocaleData(localeRu);
+registerLocaleData(localeSi);
+
 @NgModule({
   declarations: [
     AppComponent,

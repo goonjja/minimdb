@@ -139,11 +139,14 @@ namespace MiniMdb.Backend
 
             #region Apply migrations, seed data
 
-            using (var scope = app.ApplicationServices.CreateScope())
+            if (!env.IsTesting())
             {
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                db.Database.Migrate();
-                new DataSeed(db).Apply();
+                using (var scope = app.ApplicationServices.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                    db.Database.Migrate();
+                    new DataSeed(db).Apply();
+                }
             }
 
             #endregion

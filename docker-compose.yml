@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  minimdb.backend:
+    image: ${DOCKER_REGISTRY-}minimdbbackend
+    build:
+      context: .
+      dockerfile: MiniMdb.Backend/Dockerfile

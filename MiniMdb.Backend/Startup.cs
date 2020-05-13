@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +37,7 @@ namespace MiniMdb.Backend
         public void ConfigureServices(IServiceCollection services)
         {
             #region Storage
-
+            
             services.AddDbContext<AppDbContext>(options => options
                .UseNpgsql(Configuration.GetConnectionString("MainDb"))
                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
@@ -208,8 +209,8 @@ namespace MiniMdb.Backend
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
-                    //spa.UseAngularCliServer(npmScript: "start");
+                    //spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
+                    spa.UseAngularCliServer(npmScript: "start");
                 }
             });
         }

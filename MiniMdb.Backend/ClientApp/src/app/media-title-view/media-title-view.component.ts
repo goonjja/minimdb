@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { MediaTitle } from '../models/MediaTitles';
 import { ApiMessage } from '../models/ApiMessage';
 import { map } from 'rxjs/operators';
+import { AuthorizeService } from 'src/api-authorization/authorize.service';
 
 @Component({
   selector: 'app-media-title-view',
@@ -14,12 +15,14 @@ import { map } from 'rxjs/operators';
 export class MediaTitleViewComponent implements OnInit {
   mediaTitle$: Observable<MediaTitle>;
   titleId: number;
+  isAuthenticated = false;
 
-  constructor(private titleService: MediaTitlesService, private avRoute: ActivatedRoute) {
+  constructor(private titleService: MediaTitlesService, private avRoute: ActivatedRoute, private authService: AuthorizeService) {
     const idParam = 'id';
     if(this.avRoute.snapshot.params[idParam]) {
       this.titleId = this.avRoute.snapshot.params[idParam];
     }
+    this.isAuthenticated = authService.isAuthenticated();
   }
 
   ngOnInit(): void {

@@ -2,7 +2,7 @@
 
   <mat-card>
     <mat-card-header>
-      <a mat-icon-button color="primary" [routerLink]="['/title/', mediaTitle.id, 'edit']">
+      <a mat-icon-button color="primary" [routerLink]="['/title/', mediaTitle.id, 'edit']"  *ngIf="isAuthenticated">
         <mat-icon>edit</mat-icon>
       </a>
       <h1>{{ mediaTitle.name }}</h1>

@@ -7,6 +7,7 @@ import { MediaTitlesService } from '../services/media-titles.service';
 import { MediaTitle, MediaTitleType } from '../models/MediaTitles';
 import { tap } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
+import { AuthorizeService } from 'src/api-authorization/authorize.service';
 
 @Component({
   selector: 'app-media-titles',
@@ -25,9 +26,15 @@ export class MediaTitlesComponent implements AfterViewInit, OnInit {
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['ops', 'id', 'name', 'type', 'plot'];
+  isAuthenticated = false;
+  isAdmin = false;
 
-  constructor(private titlesService: MediaTitlesService) {
-
+  constructor(private titlesService: MediaTitlesService, private authService: AuthorizeService) {
+    this.isAuthenticated = authService.isAuthenticated();
+    this.isAdmin = authService.isAdmin();
+    if (!this.isAuthenticated || !this.isAdmin) {
+      this.displayedColumns.shift();
+    }
   }
 
   ngOnInit() {

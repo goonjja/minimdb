@@ -5,8 +5,9 @@
       [opened]="(isHandset$ | async) === false">
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
-      <a i18n mat-list-item [routerLink]="['/']">Register</a>
-      <a i18n mat-list-item [routerLink]="['/']">Login</a>
+      <!-- <a i18n mat-list-item [routerLink]="['/login']">Login</a>
+      <a i18n mat-list-item [routerLink]="['/logout']">Logout</a> -->
+      <app-login-menu></app-login-menu>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>

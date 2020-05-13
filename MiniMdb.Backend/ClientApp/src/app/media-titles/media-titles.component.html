@@ -38,7 +38,7 @@
   <table mat-table class="full-width-table" matSort aria-label="Elements">
 
     <!-- Operations Column -->
-    <ng-container matColumnDef="ops">
+    <ng-container matColumnDef="ops" *ngIf="isAuthenticated">
       <th mat-header-cell *matHeaderCellDef style="width: 100px">
         Operations
         <a mat-icon-button color="primary" [routerLink]="['/add-title']">

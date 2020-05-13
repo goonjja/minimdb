@@ -40,7 +40,7 @@ export class MediaTitleAddEditComponent implements OnInit {
         name: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(100)]],
         plot: ['', [Validators.required, Validators.minLength(16), Validators.maxLength(1000)]],
       }, [Validators.required, Validators.length]
-    )
+    );
   }
 
   ngOnInit(): void {

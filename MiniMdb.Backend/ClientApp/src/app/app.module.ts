@@ -25,13 +25,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { HomeComponent } from './home/home.component';
 import { MediaTitlesComponent } from './media-titles/media-titles.component';
 import { MatTableModule } from '@angular/material/table';
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 
 import { MediaTitlesService } from './services/media-titles.service';
 import { MediaTitleAddEditComponent } from './media-title-add-edit/media-title-add-edit.component';
 import { MediaTitleViewComponent } from './media-title-view/media-title-view.component';
+
+import { ApiAuthorizationModule } from 'src/api-authorization/api-authorization.module';
+import { AuthorizeGuard } from 'src/api-authorization/authorize.guard';
+import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 
 import { registerLocaleData } from '@angular/common';
 import localeRu from '@angular/common/locales/ru';
@@ -49,6 +53,7 @@ registerLocaleData(localeSi);
     MediaTitleViewComponent,
   ],
   imports: [
+    ApiAuthorizationModule,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
@@ -72,7 +77,10 @@ registerLocaleData(localeSi);
     MatInputModule,
     MatFormFieldModule
   ],
-  providers: [MediaTitlesService],
+  providers: [
+    MediaTitlesService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

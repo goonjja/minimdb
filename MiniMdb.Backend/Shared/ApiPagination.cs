@@ -7,10 +7,12 @@ namespace MiniMdb.Backend.Shared
     /// </summary>
     public class ApiPagination
     {
-        public int Page { get; }
-        public int PageSize { get; }
-        public int TotalPages { get;  }
-        public int Count { get; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public int TotalPages { get; set; }
+        public int Count { get; set; }
+
+        public ApiPagination() { }
 
         public ApiPagination(int page, int pageSize, int count)
         {

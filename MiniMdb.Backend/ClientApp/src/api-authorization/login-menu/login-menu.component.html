@@ -1,0 +1,6 @@
+<mat-card  *ngIf="isAuthenticated | async">
+  <span mat-list-item>Authenticated!</span>
+</mat-card>
+
+<a i18n mat-list-item [routerLink]="['/login']" *ngIf="!(isAuthenticated | async)">Login</a>
+<a i18n mat-list-item [routerLink]="['/logout']" *ngIf="isAuthenticated | async">Logout</a>

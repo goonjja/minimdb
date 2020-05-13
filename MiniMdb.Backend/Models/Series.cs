@@ -2,5 +2,8 @@
 {
     public class Series : MediaTitle
     {
+        public Series() : base(Shared.MediaTitleType.Series)
+        {
+        }
     }
 }

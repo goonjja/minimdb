@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  postgres:
+    restart: always
+    network_mode: bridge
+    container_name: minimdb.database
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: minimdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - /var/lib/postgresql
+      - ./dbscripts/postgres:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  minimdb.backend:
+    links:
+      - postgres
+    network_mode: bridge
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ConnectionStrings__MainDb=User Id=postgres;Password=postgres;Server=postgres;Port=5432;Database=minimdb;Pooling=true;
+    ports:
+      - "80"
+      - "443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

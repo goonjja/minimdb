@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.Logging;
 using MiniMdb.Backend.Data;
 using MiniMdb.Backend.Models;
 using MiniMdb.Backend.Shared;
@@ -21,6 +20,9 @@ namespace MiniMdb.Backend.Services
         }
     }
 
+    /// <summary>
+    /// Service to access and modify MediaTitles stored in database
+    /// </summary>
     public interface IMediaTitlesService
     {
         Task<long> Add(Movie movie);
@@ -31,7 +33,7 @@ namespace MiniMdb.Backend.Services
         Task<bool> Update(Movie movie);
         Task<bool> Update(Series series);
 
-        Task<bool> Delete(long id);
+        Task<MediaTitle> Delete(long id);
 
         Task<DataPage<MediaTitle>> List(MediaTitleSearchCriteria searchCriteria, int page, int pageSize);
     }
@@ -39,27 +41,27 @@ namespace MiniMdb.Backend.Services
     public class MediaTitlesService : IMediaTitlesService
     {
         private readonly AppDbContext _dbContext;
-        private readonly ILogger<MediaTitlesService> _logger;
+        private readonly ITimeService _time;
 
-        public MediaTitlesService(AppDbContext dbContext, ILogger<MediaTitlesService> logger)
+        public MediaTitlesService(AppDbContext dbContext, ITimeService time)
         {
             _dbContext = dbContext;
-            _logger = logger;
+            _time = time;
         }
 
         public async Task<long> Add(Movie movie)
         {
+            movie.AddedAt = _time.Now();
             _dbContext.Movies.Add(movie);
             await _dbContext.SaveChangesAsync();
-            _logger.LogTrace("Saved movie: {@m}", movie);
             return movie.Id;
         }
 
         public async Task<long> Add(Series series)
         {
+            series.AddedAt = _time.Now();
             _dbContext.Series.Add(series);
             await _dbContext.SaveChangesAsync();
-            _logger.LogTrace("Saved series: {@m}", series);
             return series.Id;
         }
 
@@ -68,13 +70,12 @@ namespace MiniMdb.Backend.Services
             return await _dbContext.Titles.FindAsync(id); ;
         }
 
-        // todo read and update
         public async Task<bool> Update(Movie movie)
         {
-            _dbContext.Movies.Update(movie);
-            _dbContext.Entry(movie).State = EntityState.Modified;
             try
             {
+                movie.UpdatedAt = _time.Now();
+                _dbContext.Movies.Update(movie);
                 await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -82,18 +83,17 @@ namespace MiniMdb.Backend.Services
                 if (!_dbContext.Titles.Any(e => e.Id == movie.Id))
                     return false;
                 else
-                    throw;
+                    throw; // todo make corresponding error code and avoid exceptions
             }
             return true;
         }
 
-        // todo read and update
         public async Task<bool> Update(Series series)
         {
-            _dbContext.Series.Update(series);
-            _dbContext.Entry(series).State = EntityState.Modified;
             try
             {
+                series.UpdatedAt = _time.Now();
+                _dbContext.Series.Update(series);
                 await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -101,21 +101,20 @@ namespace MiniMdb.Backend.Services
                 if (!_dbContext.Titles.Any(e => e.Id == series.Id))
                     return false;
                 else
-                    throw;
+                    throw; // todo make corresponding error code and avoid exceptions
             }
             return true;
         }
 
-        public async Task<bool> Delete(long id)
+        public async Task<MediaTitle> Delete(long id)
         {
             var entity = await _dbContext.Titles.FindAsync(id);
             if (entity == null)
-                return false;
+                return null;
 
             _dbContext.Titles.Remove(entity);
             await _dbContext.SaveChangesAsync();
-            _logger.LogTrace("Deleted title: {@m}", entity);
-            return true;
+            return entity;
         }
 
         public async Task<DataPage<MediaTitle>> List(MediaTitleSearchCriteria searchCriteria, int page, int pageSize)
@@ -130,7 +129,7 @@ namespace MiniMdb.Backend.Services
             {
                 titles = titles.Where(t => EF.Functions.ILike(t.Name, $"{searchCriteria.Name}%"));
             }
-            
+            titles = titles.OrderBy(t => t.Id);
             return await DataPage<MediaTitle>.CreateAsync(titles, page, pageSize);
         }
     }

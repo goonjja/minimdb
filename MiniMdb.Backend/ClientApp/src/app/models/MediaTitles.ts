@@ -3,6 +3,11 @@ export enum MediaTitleType {
   Series = 1
 }
 
+export const MediaTitleTypeName = new Map<number, string>([
+  [MediaTitleType.Movie, 'Movie'],
+  [MediaTitleType.Series, 'Series']
+]);
+
 export class MediaTitle {
   id?: number;
   type: MediaTitleType;
@@ -10,5 +15,3 @@ export class MediaTitle {
   plot: string;
   releaseDate: number;
 }
-
-

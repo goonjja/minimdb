@@ -4,32 +4,41 @@
     <mat-spinner></mat-spinner>
   </div>
 
-  <form  (ngSubmit)="search()">
-    <!-- Name filter -->
-    <mat-form-field appearance="fill" [hideRequiredMarker]=(true)>
-      <mat-label>Filter by name:</mat-label>
-      <input matInput placeholder="Name" [formControl]="nameFilter"/>
-    </mat-form-field>
+  <div class="table-controls-container">
+    <form  (ngSubmit)="search()" class="table-control">
+      <!-- Name filter -->
+      <mat-form-field appearance="fill" [hideRequiredMarker]=(true)>
+        <mat-label>Filter by name:</mat-label>
+        <input matInput placeholder="Name" [formControl]="nameFilter"/>
+      </mat-form-field>
 
-    <!-- Type filter -->
-    <mat-form-field appearance="fill" [hideRequiredMarker]=(true)>
-      <mat-label>Search by type:</mat-label>
-      <select matNativeControl [formControl]="typeFilter">
-        <option value={{null}}>Any</option>
-        <option value={{0}}>Movie</option>
-        <option value={{1}}>Series</option>
-      </select>
-    </mat-form-field>
+      <!-- Type filter -->
+      <mat-form-field appearance="fill" [hideRequiredMarker]=(true)>
+        <mat-label>Search by type:</mat-label>
+        <select matNativeControl [formControl]="typeFilter">
+          <option value={{null}}>Any</option>
+          <option value={{0}}>Movie</option>
+          <option value={{1}}>Series</option>
+        </select>
+      </mat-form-field>
 
-    <button type="submit" mat-icon-button appearance="fill">
-      <mat-icon>search</mat-icon>
-    </button>
-  </form>
+      <button type="submit" mat-icon-button appearance="fill">
+        <mat-icon>search</mat-icon>
+      </button>
+    </form>
+
+    <mat-paginator #paginator class="table-control"
+        [length]="dataSource?.count"
+        [pageIndex]="0"
+        [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 15, 20]">
+    </mat-paginator>
+  </div>
 
   <table mat-table class="full-width-table" matSort aria-label="Elements">
 
     <!-- Operations Column -->
-    <ng-container matColumnDef="ops">
+    <ng-container matColumnDef="ops" *ngIf="isAuthenticated">
       <th mat-header-cell *matHeaderCellDef style="width: 100px">
         Operations
         <a mat-icon-button color="primary" [routerLink]="['/add-title']">
@@ -55,7 +64,7 @@
     <!-- Type Column -->
     <ng-container matColumnDef="type">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
-      <td mat-cell *matCellDef="let row">{{row.type}}</td>
+      <td mat-cell *matCellDef="let row">{{titleTypes.get(row.type)}}</td>
     </ng-container>
 
     <!-- Name Column -->
@@ -77,11 +86,4 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
-
-  <mat-paginator #paginator
-      [length]="dataSource?.count"
-      [pageIndex]="0"
-      [pageSize]="5"
-      [pageSizeOptions]="[5, 10, 15, 20]">
-  </mat-paginator>
 </div>

@@ -1,5 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using MiniMdb.Auth;
+using MiniMdb.Backend.Helpers;
 using MiniMdb.Backend.Models;
 using MiniMdb.Backend.Services;
 using MiniMdb.Backend.Shared;
@@ -18,11 +23,21 @@ namespace MiniMdb.Backend.Controllers
     {
         private readonly IMediaTitlesService _service;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
+        private readonly ILogger<MediaTitlesController> _logger;
 
-        public MediaTitlesController(IMediaTitlesService service, IMapper mapper)
+        public MediaTitlesController
+        (
+            IMediaTitlesService service, 
+            IMapper mapper,
+            IMemoryCache cache,
+            ILogger<MediaTitlesController> logger
+        )
         {
             _service = service;
             _mapper = mapper;
+            _cache = cache;
+            _logger = logger;
         }
 
         /// <summary>
@@ -42,8 +57,8 @@ namespace MiniMdb.Backend.Controllers
             [FromQuery] int pageSize = 5
         )
         {
-            // restrict page size to be between 1 and 10
-            pageSize = Math.Min(Math.Max(pageSize, 1), 10);
+            // restrict page size to be between 1 and 20
+            pageSize = Math.Min(Math.Max(pageSize, 1), 20);
             page = Math.Max(1, page);
 
             var dataPage = await _service.List(new MediaTitleSearchCriteria(nameFilter, typeFilter), page, pageSize);
@@ -61,10 +76,27 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="id">Title id</param>
         /// <returns>Entity or error</returns>
         [HttpGet("{id}")]
+        [Authorize(Policy = MiniMdbRoles.AuthenticatedPolicy)]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Get(int id)
         {
-            // TODO return error if missing
-            return ApiMessage.From(_mapper.Map<MediaTitleVm>(await _service.Get(id)));
+            var cacheKey = CacheKeys.MediaTitle(id);
+            if (_cache.TryGetValue(cacheKey, out var cachedEntity))
+            {
+                _logger.LogDebug("Retrieved from cache!");
+                return ApiMessage.From(_mapper.Map<MediaTitleVm>(cachedEntity as MediaTitle));
+            }
+
+            var entity = await _service.Get(id);
+
+            if (entity == null)
+                return NotFound(new ApiMessage { Error = ApiError.NotFound });
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromSeconds(5))
+                .SetSize(1);
+            _cache.Set(cacheKey, entity, cacheEntryOptions);
+
+            return ApiMessage.From(_mapper.Map<MediaTitleVm>(entity));
         }
 
         /// <summary>
@@ -73,6 +105,7 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="title">New media title payload</param>
         /// <returns>Saved data</returns>
         [HttpPost]
+        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Post([FromBody] MediaTitleVm title)
         {
             if (title.Type == MediaTitleType.Movie)
@@ -97,19 +130,28 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="title">Media title payload</param>
         /// <returns>Saved data</returns>
         [HttpPut("{id}")]
+        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Put(int id, [FromBody] MediaTitleVm title)
         {
+            // find first to determine type
+            var entity = await _service.Get(id);
+            if (entity == null)
+                return NotFound(new ApiMessage { Error = ApiError.NotFound });
+
             title.Id = id;
-            if (title.Type == MediaTitleType.Movie)
+            if (entity.Type == MediaTitleType.Movie)
             {
                 var movie = _mapper.Map<Movie>(title);
                 await _service.Update(movie);
             }
-            else if (title.Type == MediaTitleType.Series)
+            else if (entity.Type == MediaTitleType.Series)
             {
                 var series = _mapper.Map<Series>(title);
                 await _service.Update(series);
             }
+            // invalidate cache
+            _cache.Remove(CacheKeys.MediaTitle(id));
+
             return ApiMessage.From(title);
         }
 
@@ -119,10 +161,18 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="id">Media title id</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public async Task Delete(int id)
+        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
+        public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Delete(int id)
         {
-            // TODO return result or error
-            await _service.Delete(id);
+            var entity = await _service.Delete(id);
+
+            if(entity == null)
+                return NotFound(new ApiMessage { Error = ApiError.NotFound });
+
+            // invalidate cache
+            _cache.Remove(CacheKeys.MediaTitle(id));
+
+            return ApiMessage.From(_mapper.Map<MediaTitleVm>(entity));
         }
     }
 }

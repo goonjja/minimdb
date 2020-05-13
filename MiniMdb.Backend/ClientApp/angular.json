@@ -13,6 +13,13 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "ru": "src/locale/messages.ru.xlf",
+          "si": "src/locale/messages.si.xlf"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -34,6 +41,28 @@
             "scripts": []
           },
           "configurations": {
+            "staging1": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stage1.ts"
+                }
+              ]
+            },
+            "staging2": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stage2.ts"
+                }
+              ]
+            },
+            "ru": {
+              "localize": ["ru"]
+            },
+            "si": {
+              "localize": ["si"]
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -72,6 +101,12 @@
           "configurations": {
             "production": {
               "browserTarget": "MiniMdb:build:production"
+            },
+            "ru": {
+              "browserTarget": "MiniMdb:build:ru"
+            },
+            "si": {
+              "browserTarget": "MiniMdb:build:si"
             }
           }
         },

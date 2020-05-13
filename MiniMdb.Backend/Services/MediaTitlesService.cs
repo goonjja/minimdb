@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.Extensions.Logging;
 using MiniMdb.Backend.Data;
 using MiniMdb.Backend.Models;
 using MiniMdb.Backend.Shared;
@@ -42,16 +41,17 @@ namespace MiniMdb.Backend.Services
     public class MediaTitlesService : IMediaTitlesService
     {
         private readonly AppDbContext _dbContext;
-        private readonly ILogger<MediaTitlesService> _logger;
+        private readonly ITimeService _time;
 
-        public MediaTitlesService(AppDbContext dbContext, ILogger<MediaTitlesService> logger)
+        public MediaTitlesService(AppDbContext dbContext, ITimeService time)
         {
             _dbContext = dbContext;
-            _logger = logger;
+            _time = time;
         }
 
         public async Task<long> Add(Movie movie)
         {
+            movie.AddedAt = _time.Now();
             _dbContext.Movies.Add(movie);
             await _dbContext.SaveChangesAsync();
             return movie.Id;
@@ -59,6 +59,7 @@ namespace MiniMdb.Backend.Services
 
         public async Task<long> Add(Series series)
         {
+            series.AddedAt = _time.Now();
             _dbContext.Series.Add(series);
             await _dbContext.SaveChangesAsync();
             return series.Id;
@@ -73,6 +74,7 @@ namespace MiniMdb.Backend.Services
         {
             try
             {
+                movie.UpdatedAt = _time.Now();
                 _dbContext.Movies.Update(movie);
                 await _dbContext.SaveChangesAsync();
             }
@@ -90,6 +92,7 @@ namespace MiniMdb.Backend.Services
         {
             try
             {
+                series.UpdatedAt = _time.Now();
                 _dbContext.Series.Update(series);
                 await _dbContext.SaveChangesAsync();
             }

@@ -129,7 +129,7 @@ namespace MiniMdb.Backend.Services
             {
                 titles = titles.Where(t => EF.Functions.ILike(t.Name, $"{searchCriteria.Name}%"));
             }
-            
+            titles = titles.OrderBy(t => t.Id);
             return await DataPage<MediaTitle>.CreateAsync(titles, page, pageSize);
         }
     }

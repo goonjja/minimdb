@@ -17,5 +17,13 @@ namespace MiniMdb.Backend.Models
         public long AddedAt { get; set; }
 
         public long UpdatedAt { get; set; }
+
+        public MediaTitle()
+        {}
+
+        protected MediaTitle(MediaTitleType type)
+        {
+            Type = type;
+        }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MiniMdb.Auth;
 using MiniMdb.Backend.Models;
 using MiniMdb.Backend.Services;
 using MiniMdb.Backend.Shared;
@@ -44,8 +42,8 @@ namespace MiniMdb.Backend.Controllers
             [FromQuery] int pageSize = 5
         )
         {
-            // restrict page size to be between 1 and 10
-            pageSize = Math.Min(Math.Max(pageSize, 1), 10);
+            // restrict page size to be between 1 and 20
+            pageSize = Math.Min(Math.Max(pageSize, 1), 20);
             page = Math.Max(1, page);
 
             var dataPage = await _service.List(new MediaTitleSearchCriteria(nameFilter, typeFilter), page, pageSize);
@@ -65,8 +63,12 @@ namespace MiniMdb.Backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Get(int id)
         {
-            // TODO return error if missing
-            return ApiMessage.From(_mapper.Map<MediaTitleVm>(await _service.Get(id)));
+            var entity = await _service.Get(id);
+
+            if (entity == null)
+                return BadRequest(ApiMessage.MakeError(3, "Media title not found"));
+
+            return ApiMessage.From(_mapper.Map<MediaTitleVm>(entity));
         }
 
         /// <summary>
@@ -75,7 +77,7 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="title">New media title payload</param>
         /// <returns>Saved data</returns>
         [HttpPost]
-        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
+        //[Authorize(Policy = MiniMdbRoles.AdminPolicy)]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Post([FromBody] MediaTitleVm title)
         {
             if (title.Type == MediaTitleType.Movie)
@@ -100,16 +102,21 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="title">Media title payload</param>
         /// <returns>Saved data</returns>
         [HttpPut("{id}")]
-        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
+        //[Authorize(Policy = MiniMdbRoles.AdminPolicy)]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Put(int id, [FromBody] MediaTitleVm title)
         {
+            // find first to determine type
+            var entity = await _service.Get(id);
+            if (entity == null)
+                return BadRequest(ApiMessage.MakeError(3, "Media title not found"));
+
             title.Id = id;
-            if (title.Type == MediaTitleType.Movie)
+            if (entity.Type == MediaTitleType.Movie)
             {
                 var movie = _mapper.Map<Movie>(title);
                 await _service.Update(movie);
             }
-            else if (title.Type == MediaTitleType.Series)
+            else if (entity.Type == MediaTitleType.Series)
             {
                 var series = _mapper.Map<Series>(title);
                 await _service.Update(series);
@@ -123,11 +130,15 @@ namespace MiniMdb.Backend.Controllers
         /// <param name="id">Media title id</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize(Policy = MiniMdbRoles.AdminPolicy)]
-        public async Task Delete(int id)
+        //[Authorize(Policy = MiniMdbRoles.AdminPolicy)]
+        public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Delete(int id)
         {
-            // TODO return result or error
-            await _service.Delete(id);
+            var entity = await _service.Delete(id);
+
+            if(entity == null)
+                return BadRequest(ApiMessage.MakeError(3, "Media title not found"));
+
+            return ApiMessage.From(_mapper.Map<MediaTitleVm>(entity));
         }
     }
 }

@@ -21,6 +21,9 @@ namespace MiniMdb.Backend.Services
         }
     }
 
+    /// <summary>
+    /// Service to access and modify MediaTitles stored in database
+    /// </summary>
     public interface IMediaTitlesService
     {
         Task<long> Add(Movie movie);
@@ -31,7 +34,7 @@ namespace MiniMdb.Backend.Services
         Task<bool> Update(Movie movie);
         Task<bool> Update(Series series);
 
-        Task<bool> Delete(long id);
+        Task<MediaTitle> Delete(long id);
 
         Task<DataPage<MediaTitle>> List(MediaTitleSearchCriteria searchCriteria, int page, int pageSize);
     }
@@ -51,7 +54,6 @@ namespace MiniMdb.Backend.Services
         {
             _dbContext.Movies.Add(movie);
             await _dbContext.SaveChangesAsync();
-            _logger.LogTrace("Saved movie: {@m}", movie);
             return movie.Id;
         }
 
@@ -59,7 +61,6 @@ namespace MiniMdb.Backend.Services
         {
             _dbContext.Series.Add(series);
             await _dbContext.SaveChangesAsync();
-            _logger.LogTrace("Saved series: {@m}", series);
             return series.Id;
         }
 
@@ -68,13 +69,11 @@ namespace MiniMdb.Backend.Services
             return await _dbContext.Titles.FindAsync(id); ;
         }
 
-        // todo read and update
         public async Task<bool> Update(Movie movie)
         {
-            _dbContext.Movies.Update(movie);
-            _dbContext.Entry(movie).State = EntityState.Modified;
             try
             {
+                _dbContext.Movies.Update(movie);
                 await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -82,18 +81,16 @@ namespace MiniMdb.Backend.Services
                 if (!_dbContext.Titles.Any(e => e.Id == movie.Id))
                     return false;
                 else
-                    throw;
+                    throw; // todo make corresponding error code and avoid exceptions
             }
             return true;
         }
 
-        // todo read and update
         public async Task<bool> Update(Series series)
         {
-            _dbContext.Series.Update(series);
-            _dbContext.Entry(series).State = EntityState.Modified;
             try
             {
+                _dbContext.Series.Update(series);
                 await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -101,21 +98,20 @@ namespace MiniMdb.Backend.Services
                 if (!_dbContext.Titles.Any(e => e.Id == series.Id))
                     return false;
                 else
-                    throw;
+                    throw; // todo make corresponding error code and avoid exceptions
             }
             return true;
         }
 
-        public async Task<bool> Delete(long id)
+        public async Task<MediaTitle> Delete(long id)
         {
             var entity = await _dbContext.Titles.FindAsync(id);
             if (entity == null)
-                return false;
+                return null;
 
             _dbContext.Titles.Remove(entity);
             await _dbContext.SaveChangesAsync();
-            _logger.LogTrace("Deleted title: {@m}", entity);
-            return true;
+            return entity;
         }
 
         public async Task<DataPage<MediaTitle>> List(MediaTitleSearchCriteria searchCriteria, int page, int pageSize)

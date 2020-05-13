@@ -10,8 +10,10 @@ namespace MiniMdb.Backend
     {
         public const string Staging1 = "Staging1";
         public const string Staging2 = "Staging2";
+        public const string Testing = "Testing";
 
         public static bool IsStaging1(this IWebHostEnvironment env) => env.IsEnvironment(Staging1);
         public static bool IsStaging2(this IWebHostEnvironment env) => env.IsEnvironment(Staging2);
+        public static bool IsTesting(this IWebHostEnvironment env) => env.IsEnvironment(Testing);
     }
 }

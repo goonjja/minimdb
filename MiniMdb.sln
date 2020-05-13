@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniMdb.Backend", "MiniMdb.Backend\MiniMdb.Backend.csproj", "{8B18F89A-BB6C-49F3-B056-0A75C21E798D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniMdb.Auth", "MiniMdb.Auth\MiniMdb.Auth.csproj", "{52505E39-0E3A-4FAF-A250-6638A84424F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniMdb.Auth", "MiniMdb.Auth\MiniMdb.Auth.csproj", "{52505E39-0E3A-4FAF-A250-6638A84424F7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{92E50759-9A61-4B05-AB06-226810CE446B}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

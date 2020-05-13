@@ -60,6 +60,9 @@
             "ru": {
               "localize": ["ru"]
             },
+            "si": {
+              "localize": ["si"]
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -101,6 +104,9 @@
             },
             "ru": {
               "browserTarget": "MiniMdb:build:ru"
+            },
+            "si": {
+              "browserTarget": "MiniMdb:build:si"
             }
           }
         },

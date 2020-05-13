@@ -88,7 +88,7 @@ namespace MiniMdb.Backend.Controllers
             var entity = await _service.Get(id);
 
             if (entity == null)
-                return BadRequest(ApiMessage.MakeError(3, "Media title not found"));
+                return NotFound(new ApiMessage { Error = ApiError.NotFound });
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetSlidingExpiration(TimeSpan.FromSeconds(5))
@@ -135,7 +135,7 @@ namespace MiniMdb.Backend.Controllers
             // find first to determine type
             var entity = await _service.Get(id);
             if (entity == null)
-                return BadRequest(ApiMessage.MakeError(3, "Media title not found"));
+                return NotFound(new ApiMessage { Error = ApiError.NotFound });
 
             title.Id = id;
             if (entity.Type == MediaTitleType.Movie)
@@ -166,7 +166,7 @@ namespace MiniMdb.Backend.Controllers
             var entity = await _service.Delete(id);
 
             if(entity == null)
-                return BadRequest(ApiMessage.MakeError(3, "Media title not found"));
+                return NotFound(new ApiMessage { Error = ApiError.NotFound });
 
             // invalidate cache
             _cache.Remove(CacheKeys.MediaTitle(id));

@@ -19,6 +19,8 @@ namespace MiniMdb.Backend.Shared
 
         public ApiError Localized(IStringLocalizer localizer)
         {
+            if (localizer == null)
+                return this;
             return new ApiError { Code = Code, Message = localizer[Message] };
         }
 

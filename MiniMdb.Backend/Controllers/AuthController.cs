@@ -4,7 +4,6 @@ using MiniMdb.Auth;
 using MiniMdb.Backend.Resources;
 using MiniMdb.Backend.Shared;
 using MiniMdb.Backend.ViewModels;
-using System;
 using System.Linq;
 
 namespace MiniMdb.Backend.Controllers
@@ -14,7 +13,8 @@ namespace MiniMdb.Backend.Controllers
     [Produces("application/json")]
     public class AuthController : Controller
     {
-        private static ApiUser[] Users = new[] {
+        // Exposed for testing
+        public static ApiUser[] Users = new[] {
             new ApiUser { Email  = "admin@example.com", Password = "m3g@pA$$W0rDDD", Roles = new [] {MiniMdbRoles.AdminRole } },
             new ApiUser { Email  = "anyone@example.com", Password = "w3@kpa$$w0rd", Roles =new [] {MiniMdbRoles.UserRole } }
         };
@@ -22,7 +22,7 @@ namespace MiniMdb.Backend.Controllers
         private readonly JwtFactory _jwtFactory;
         private readonly IStringLocalizer<Errors> _localizer;
 
-        public AuthController(JwtFactory jwtFactory, IStringLocalizer<Errors> localizer)
+        public AuthController(JwtFactory jwtFactory, IStringLocalizer<Errors> localizer = null)
         {
             _jwtFactory = jwtFactory;
             _localizer = localizer;
@@ -39,7 +39,6 @@ namespace MiniMdb.Backend.Controllers
         [HttpPost]
         public ActionResult<ApiMessage<string>> Authenticate([FromBody] LoginRequest req)
         {
-            Console.WriteLine(_localizer[ApiError.InvalidCredentials.Message]);
             var user = Users.FirstOrDefault(u => u.Email == req.Email && u.Password == req.Password);
             if (user == null)
                 return BadRequest(new ApiMessage { Error = ApiError.InvalidCredentials.Localized(_localizer) });
@@ -64,7 +63,7 @@ namespace MiniMdb.Backend.Controllers
             throw new System.Exception("It contains sensitive information: " + Users[0].Email);
         }
 
-        private class ApiUser
+        public class ApiUser
         {
             public string Email { get; set; }
             public string Password { get; set; }

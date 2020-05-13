@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MiniMdb.Auth;
 using MiniMdb.Backend.Data;
@@ -82,6 +83,13 @@ namespace MiniMdb.Backend
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            #region Different configurations demo
+
+            var logger = app.ApplicationServices.GetRequiredService<ILogger<Startup>>();
+            logger.LogInformation($"Welcome to: {Configuration["TestMessage"]}");
+
+            #endregion
+
             // Initialize AutoMapper
             var mapper = app.ApplicationServices.GetRequiredService<IMapper>();
             mapper.ConfigurationProvider.AssertConfigurationIsValid();
@@ -100,7 +108,7 @@ namespace MiniMdb.Backend
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            
             if (!env.IsDevelopment())
             {
                 app.UseSpaStaticFiles();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MiniMdb.Backend.Shared;
@@ -12,10 +13,12 @@ namespace MiniMdb.Backend.Controllers
     public class ErrorController : Controller
     {
         private readonly ILogger<ErrorController> _logger;
+        private readonly bool _isStaging2;
 
-        public ErrorController(ILogger<ErrorController> logger)
+        public ErrorController(ILogger<ErrorController> logger, IWebHostEnvironment env)
         {
             _logger = logger;
+            _isStaging2 = env.IsStaging2();
         }
 
         [AllowAnonymous]
@@ -26,6 +29,11 @@ namespace MiniMdb.Backend.Controllers
             if(exceptionHandlerPathFeature?.Error != null)
             {
                 _logger.LogError(exceptionHandlerPathFeature?.Error, $"Exception in: {exceptionHandlerPathFeature?.Path}");
+            }
+
+            if(_isStaging2)
+            {
+                _logger.LogDebug("Additional info?");
             }
 
             return StatusCode(500, ApiMessage.MakeError(1, "System error"));

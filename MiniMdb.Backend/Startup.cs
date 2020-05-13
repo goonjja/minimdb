@@ -62,6 +62,15 @@ namespace MiniMdb.Backend
 
             #endregion
 
+            #region Caching
+
+            services.AddMemoryCache(cfg =>
+            {
+                cfg.SizeLimit = 1024;
+            });
+
+            #endregion
+
             #region Auth
 
             services.AddTokenAuthentication(

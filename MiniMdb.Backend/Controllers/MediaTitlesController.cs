@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using MiniMdb.Auth;
+using MiniMdb.Backend.Helpers;
 using MiniMdb.Backend.Models;
 using MiniMdb.Backend.Services;
 using MiniMdb.Backend.Shared;
@@ -20,11 +23,21 @@ namespace MiniMdb.Backend.Controllers
     {
         private readonly IMediaTitlesService _service;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
+        private readonly ILogger<MediaTitlesController> _logger;
 
-        public MediaTitlesController(IMediaTitlesService service, IMapper mapper)
+        public MediaTitlesController
+        (
+            IMediaTitlesService service, 
+            IMapper mapper,
+            IMemoryCache cache,
+            ILogger<MediaTitlesController> logger
+        )
         {
             _service = service;
             _mapper = mapper;
+            _cache = cache;
+            _logger = logger;
         }
 
         /// <summary>
@@ -65,10 +78,22 @@ namespace MiniMdb.Backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiMessage<MediaTitleVm>>> Get(int id)
         {
+            var cacheKey = CacheKeys.MediaTitle(id);
+            if (_cache.TryGetValue(cacheKey, out var cachedEntity))
+            {
+                _logger.LogDebug("Retrieved from cache!");
+                return ApiMessage.From(_mapper.Map<MediaTitleVm>(cachedEntity as MediaTitle));
+            }
+
             var entity = await _service.Get(id);
 
             if (entity == null)
                 return BadRequest(ApiMessage.MakeError(3, "Media title not found"));
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromSeconds(5))
+                .SetSize(1);
+            _cache.Set(cacheKey, entity, cacheEntryOptions);
 
             return ApiMessage.From(_mapper.Map<MediaTitleVm>(entity));
         }
@@ -123,6 +148,9 @@ namespace MiniMdb.Backend.Controllers
                 var series = _mapper.Map<Series>(title);
                 await _service.Update(series);
             }
+            // invalidate cache
+            _cache.Remove(CacheKeys.MediaTitle(id));
+
             return ApiMessage.From(title);
         }
 
@@ -139,6 +167,9 @@ namespace MiniMdb.Backend.Controllers
 
             if(entity == null)
                 return BadRequest(ApiMessage.MakeError(3, "Media title not found"));
+
+            // invalidate cache
+            _cache.Remove(CacheKeys.MediaTitle(id));
 
             return ApiMessage.From(_mapper.Map<MediaTitleVm>(entity));
         }

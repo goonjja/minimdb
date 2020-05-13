@@ -20,19 +20,29 @@ namespace MiniMdb.Backend
 {
     public class Startup
     {
+        private readonly IWebHostEnvironment _env;
+
         public IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            #region Storage
+
             services.AddDbContext<AppDbContext>(options => options
                .UseNpgsql(Configuration.GetConnectionString("MainDb"))
                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             );
+
+            #endregion
+
+            #region Web
+
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(cfg => cfg.RootPath = "ClientApp/dist");
 
@@ -42,15 +52,15 @@ namespace MiniMdb.Backend
                 .AddJsonOptions(json => json.JsonSerializerOptions.IgnoreNullValues = true);
 
             services.AddSingleton<ValidRequestFilter>();
-            services.AddMvcCore()
-                //.AddCors()
-                .AddApiExplorer();
+            services.AddMvcCore().AddApiExplorer();
             services.AddMvc().AddMvcOptions(o => o.Filters.Add<ValidRequestFilter>());
 
-            services.AddAutoMapper(typeof(VmMappingProfile));
+            if(!_env.IsDevelopment())
+            {
+                services.AddCors();
+            }
 
-            services.AddSingleton<ITimeService, TimeService>();
-            services.AddTransient<IMediaTitlesService, MediaTitlesService>();
+            #endregion
 
             #region Auth
 
@@ -79,6 +89,11 @@ namespace MiniMdb.Backend
             });
 
             #endregion
+
+            services.AddAutoMapper(typeof(VmMappingProfile));
+
+            services.AddSingleton<ITimeService, TimeService>();
+            services.AddTransient<IMediaTitlesService, MediaTitlesService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -34,6 +34,22 @@
             "scripts": []
           },
           "configurations": {
+            "staging1": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stage1.ts"
+                }
+              ]
+            },
+            "staging2": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stage2.ts"
+                }
+              ]
+            },
             "production": {
               "fileReplacements": [
                 {

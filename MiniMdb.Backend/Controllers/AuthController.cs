@@ -3,6 +3,7 @@ using MiniMdb.Auth;
 using MiniMdb.Backend.Shared;
 using MiniMdb.Backend.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MiniMdb.Backend.Controllers
 {
@@ -31,6 +32,16 @@ namespace MiniMdb.Backend.Controllers
                 return BadRequest(ApiMessage.MakeError(2, "Invalid credentials"));
 
             return ApiMessage.From(_jwtFactory.Generate(user.Email, user.Roles));
+        }
+
+        /// <summary>
+        /// Example method with exception
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("/throw")]
+        public async Task<ActionResult<ApiMessage<string>>> FailAuth()
+        {
+            throw new System.Exception("It contains sensitive information: " + Users[0].Email);
         }
 
         private class ApiUser

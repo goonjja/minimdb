@@ -1,4 +1,6 @@
-﻿namespace MiniMdb.Backend.Shared
+﻿using Microsoft.Extensions.Localization;
+
+namespace MiniMdb.Backend.Shared
 {
     /// <summary>
     /// Api error envelope
@@ -14,6 +16,11 @@
         /// Error details
         /// </summary>
         public string Message { get; set; }
+
+        public ApiError Localized(IStringLocalizer localizer)
+        {
+            return new ApiError { Code = Code, Message = localizer[Message] };
+        }
 
         #region Application error codes
 

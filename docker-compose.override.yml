@@ -17,6 +17,8 @@ services:
       - "5432:5432"
 
   minimdb.backend:
+    depends_on:
+      - postgres
     links:
       - postgres
     network_mode: bridge
@@ -25,8 +27,8 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ConnectionStrings__MainDb=User Id=postgres;Password=postgres;Server=postgres;Port=5432;Database=minimdb;Pooling=true;
     ports:
-      - "80"
-      - "443"
+      - "10080:80"
+      - "10443:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

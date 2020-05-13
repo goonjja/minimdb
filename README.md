@@ -79,3 +79,5 @@ To run:
 docker-compose build
 docker-compose up
 ```
+
+The application will be available at https://localhost:10443

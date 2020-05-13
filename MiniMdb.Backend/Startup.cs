@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 
 namespace MiniMdb.Backend
 {
@@ -139,6 +140,24 @@ namespace MiniMdb.Backend
             #endregion
 
             #region Apply migrations, seed data
+
+            // Wait for database to start for 5 seconds
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var timeout = 5;
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                while (timeout > 0)
+                {
+                    try
+                    {
+                        if (db.Database.CanConnect())
+                            break;
+                    }
+                    catch (Exception) { }
+                    Thread.Sleep(1000);
+                    --timeout;
+                }
+            }
 
             if (!env.IsTesting())
             {

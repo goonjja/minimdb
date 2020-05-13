@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MiniMdb.Auth;
 using MiniMdb.Backend.Models;
 using MiniMdb.Backend.Services;
 using MiniMdb.Backend.Shared;

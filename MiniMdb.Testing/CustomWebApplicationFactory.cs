@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MiniMdb.Backend;
 using MiniMdb.Backend.Data;
 using MiniMdb.Testing.Util;
 using System;
+using System.Linq;
 
 namespace MiniMdb.Testing
 {
@@ -19,19 +21,19 @@ namespace MiniMdb.Testing
             builder.ConfigureServices(services =>
             {
                 //// Remove the app's ApplicationDbContext registration.
-                //var descriptor = services.SingleOrDefault(
-                //    d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+                var descriptor = services.SingleOrDefault(
+                    d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
 
-                //if (descriptor != null)
-                //{
-                //    services.Remove(descriptor);
-                //}
+                if (descriptor != null)
+                {
+                    services.Remove(descriptor);
+                }
 
-                //// Add ApplicationDbContext using an in-memory database for testing.
-                //services.AddDbContext<AppDbContext>(options =>
-                //{
-                //    options.UseInMemoryDatabase("InMemoryDbForTesting");
-                //});
+                // Add ApplicationDbContext using an in-memory database for testing.
+                services.AddDbContext<AppDbContext>(options =>
+                {
+                    options.UseInMemoryDatabase("InMemoryDbForTesting");
+                });
 
                 // Build the service provider.
                 var sp = services.BuildServiceProvider();
@@ -51,7 +53,7 @@ namespace MiniMdb.Testing
                     try
                     {
                         // Seed the database with test data.
-                        DbSeed.InitializeDbForTests(db);
+                        DbSeed.ReinitializeDbForTests(db);
                     }
                     catch (Exception ex)
                     {

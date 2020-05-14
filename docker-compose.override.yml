@@ -23,12 +23,13 @@ services:
       - postgres
     network_mode: bridge
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_ENVIRONMENT=Production
+#      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__MainDb=User Id=postgres;Password=postgres;Server=postgres;Port=5432;Database=minimdb;Pooling=true;
     ports:
       - "10080:80"
-      - "10443:443"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+#      - "10443:443"
+#    volumes:
+#      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+#      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

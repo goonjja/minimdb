@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MediaTitle, MediaTitleType } from '../models/MediaTitles';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { MediaTitlesService } from '../services/media-titles.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -11,9 +11,10 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
   styleUrls: ['./media-title-add-edit.component.scss']
 })
 export class MediaTitleAddEditComponent implements OnInit {
+  existing = new BehaviorSubject<boolean>(false);
+
   mediaTitle: MediaTitle;
   titleId: number;
-  existing: boolean;
   action: string;
 
   form: FormGroup;
@@ -46,7 +47,6 @@ export class MediaTitleAddEditComponent implements OnInit {
   ngOnInit(): void {
     this.action = 'Create media title';
     if(this.titleId > 0) {
-      this.existing = true;
       this.loadMediaTitle();
     }
   }
@@ -59,6 +59,7 @@ export class MediaTitleAddEditComponent implements OnInit {
         this.form.controls[this.formName].setValue(this.mediaTitle.name);
         this.form.controls[this.formPlot].setValue(this.mediaTitle.plot);
         this.action = 'Edit media title';
+        this.existing.next(true);
       } else {
         // todo display error
       }

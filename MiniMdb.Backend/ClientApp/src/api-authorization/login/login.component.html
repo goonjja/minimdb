@@ -12,13 +12,18 @@
 
       <mat-form-field style="width: 100%">
         <mat-label>Password</mat-label>
-        <input type="password" matInput placeholder="Password" formControlName="password"/>
+        <input type="password" matInput placeholder="Password" formControlName="password" />
         <mat-error *ngIf="password.invalid">Password is required</mat-error>
       </mat-form-field>
       <mat-error>{{ message | async }}</mat-error>
     </mat-card-content>
     <mat-card-footer>
-      <button mat-button color="primary" type="submit">Login</button>
+      <button mat-flat-button color="primary" type="submit">Login</button>
     </mat-card-footer>
   </form>
 </mat-card>
+<pre>
+      Example users:
+      Admin role: admin@example.com m3g@pA$$W0rDDD
+      User role: anyone@example.com w3@kpa$$w0rd
+</pre>

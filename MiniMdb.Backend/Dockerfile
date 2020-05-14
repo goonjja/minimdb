@@ -2,15 +2,15 @@
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 
-RUN apt-get update -yq
-RUN apt-get install curl gnupg -yq
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
-RUN apt-get install -yq nodejs build-essential
-#RUN npm install -g npm
+# Uncomment these lines when debugging in VS
+#RUN apt-get update -yq
+#RUN apt-get install curl gnupg -yq
+#RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
+#RUN apt-get install -yq nodejs build-essential
 
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
+#EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
@@ -28,7 +28,6 @@ RUN apt-get update -yq
 RUN apt-get install curl gnupg -yq
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash
 RUN apt-get install -yq nodejs build-essential
-#RUN npm install -g npm
 
 RUN dotnet publish "MiniMdb.Backend.csproj" -c Release -o /app/publish
 

@@ -24,6 +24,23 @@ Mini IMDB. The movies and TV shows catalogue.
 * Docker containerization
 
 ## How to build and run
+
+### Running in Docker
+```
+docker-compose build
+docker-compose up -d
+```
+To stop:
+`docker-compose down`
+
+The application will be available at http://localhost:10080
+
+To build project image run in solution directory:
+
+`docker build -f "MiniMdb.Backend\Dockerfile" -t minimdb.backend .`
+
+### Running locally:
+
 Prerequisites:
 * NPM 6+ https://nodejs.org/en/download/
 * .NET Core 3.1 https://dotnet.microsoft.com/download/dotnet-core/3.1
@@ -70,18 +87,3 @@ There are two hardcoded users:
 Admin can do any operation in the app including: creating new titles, editing, removing.
 User can't edit or create anything. The only difference from anonymous access is the ability to
 see Movie/Series details on a separate page (just a demonstration of authorization policies).
-
-## Docker
-
-To build project image run in solution directory:
-
-`docker build -f "MiniMdb.Backend\Dockerfile" -t minimdb.backend .`
-
-To run:
-
-```
-docker-compose build
-docker-compose up
-```
-
-The application will be available at http://localhost:10080

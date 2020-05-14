@@ -33,13 +33,13 @@
     </mat-paginator>
   </div>
 
-  <ng-template *ngIf="isAuthenticated" >
+  <ng-container *ngIf="isAuthenticated" >
     <div class="table-controls-container">
       <button mat-flat-button color="primary"  class="table-control" [routerLink]="['/add-title']">
         Add new title
       </button>
     </div>
-  </ng-template>
+  </ng-container>
 
   <table mat-table class="full-width-table" matSort aria-label="Elements">
 

@@ -1,6 +1,10 @@
 # minimdb
 Mini IMDB. The movies and TV shows catalogue.
 
+I made this project in two days (~48 hours) as a test assignment for a fullstack developer position.
+It is far from being perfect, misses many test cases, contains hardcoded stuff, etc.
+But the general idea was to make it fast and stop to show my workflow and coding style without long polishing and perfectionism.
+
  Quick and dirty demo project featuring the following topics:
 
 * ASP.Net Core backend
